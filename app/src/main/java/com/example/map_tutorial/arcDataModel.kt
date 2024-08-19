@@ -1,9 +1,5 @@
 package com.example.map_tutorial
 
-data class ArcGisResponse(
-    val features: List<Feature>
-)
-
 data class Feature(
     val attributes: Attributes,
 )
