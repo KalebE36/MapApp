@@ -28,7 +28,6 @@ class WeatherReportsManager {
         private val client = OkHttpClient()
         private val gson = Gson()
         private val storedFeatures = mutableListOf<Feature>()
-        private var storedUniqueId : UniqueIdField? = null
 
         private var weatherLoadJob : Job? = null
         private val storedPolygons = mutableListOf<Polygon>()
@@ -86,7 +85,6 @@ class WeatherReportsManager {
         }
 
         fun drawPolygonsOnMap(mMap: GoogleMap, context: Context) {
-            val name = storedUniqueId?.name
             for (feature in storedFeatures) {
                 val geometry = feature.geometry
                 val attributes: Attributes = feature.attributes
@@ -100,15 +98,13 @@ class WeatherReportsManager {
 
 
                 colorMap[attributes.Event]?.let {
-                    val color = it.toInt(16) or (0xFF shl 24) 
+                    val color = it.toInt(16) or (0xFF shl 24)
                     polygonOptions.strokeColor(color).fillColor(color).clickable(true)
                 }
 
                 val polygon = mMap.addPolygon(polygonOptions)
                 val polygonInfo =
-                        "Event: ${attributes.Event}\n " +
-                        "UID: ${attributes.Uid}\n" +
-                                ""
+                        "Event: ${attributes.Event}\n" + "UID: ${attributes.Uid}\n"
                 polygon.tag = polygonInfo
 
             }
