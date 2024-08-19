@@ -1,8 +1,10 @@
 package com.example.map_tutorial
 
+import android.app.AlertDialog
+import android.content.Context
 import android.os.Handler
 import android.os.Looper
-
+import android.widget.Toast
 import com.google.android.gms.maps.GoogleMap
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.Polygon
@@ -31,9 +33,23 @@ class WeatherReportsManager {
         private var weatherLoadJob : Job? = null
         private val storedPolygons = mutableListOf<Polygon>()
 
+        fun stopWeatherReport() {
+            weatherLoadJob?.cancel()
+        }
 
+        fun startWeather(mMap: GoogleMap, context: Context) {
+            startWeatherReport(mMap, context)
+        }
 
-        private fun getData(mMap: GoogleMap, uiHandler: Handler) {
+        fun retPolys() : MutableList<Polygon>{
+            return storedPolygons
+        }
+
+        private fun showToast(context: Context, message: String) {
+            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
+        }
+
+        private fun getData(mMap: GoogleMap, uiHandler: Handler, context: Context) {
             val url = "https://services9.arcgis.com/RHVPKKiFTONKtxq3/ArcGIS/rest/services/NWS_Watches_Warnings_v1/FeatureServer/6/query?where=Severity+LIKE+%27Extreme%25%27+OR+Severity+LIKE+%27Severe%25%27&outFields=OBJECTID%2C+event%2C+uid&returnGeometry=true&outSR=4326&f=pjson"
             val request = Request.Builder().url(url).build()
 
@@ -61,7 +77,7 @@ class WeatherReportsManager {
                             storedPolygons.clear()
                             storedFeatures.addAll(weatherData.features)
                             uiHandler.post {
-                                drawPolygonsOnMap(mMap)
+                                drawPolygonsOnMap(mMap, context)
                             }
                         }
                     }
@@ -69,11 +85,11 @@ class WeatherReportsManager {
             })
         }
 
-        fun drawPolygonsOnMap(mMap: GoogleMap) {
+        fun drawPolygonsOnMap(mMap: GoogleMap, context: Context) {
             val name = storedUniqueId?.name
             for (feature in storedFeatures) {
                 val geometry = feature.geometry
-                val attributes : Attributes = feature.attributes
+                val attributes: Attributes = feature.attributes
 
                 val polygonOptions = PolygonOptions()
 
@@ -82,46 +98,43 @@ class WeatherReportsManager {
                     polygonOptions.addAll(polygonPoints)
                 }
 
-                System.out.println("Name: " + attributes.Event)
+
                 colorMap[attributes.Event]?.let {
-                    val color = it.toInt(16) or (0xFF shl 24) // Add alpha (opacity) value
-                    polygonOptions.strokeColor(color)
-                    polygonOptions.fillColor(color)
-                }
-                colorMap[attributes.Event]?.let {
-                    val color = it.toInt(16) or (0xFF shl 24) // Add alpha (opacity) value
-                    polygonOptions.strokeColor(color)
-                    polygonOptions.fillColor(color)
+                    val color = it.toInt(16) or (0xFF shl 24) 
+                    polygonOptions.strokeColor(color).fillColor(color).clickable(true)
                 }
 
                 val polygon = mMap.addPolygon(polygonOptions)
-                storedPolygons.add(polygon)
+                val polygonInfo =
+                        "Event: ${attributes.Event}\n " +
+                        "UID: ${attributes.Uid}\n" +
+                                ""
+                polygon.tag = polygonInfo
+
+            }
+            mMap.setOnPolygonClickListener { clickedPolygon ->
+                val info = clickedPolygon.tag as? String
+                info?.let {
+                    AlertDialog.Builder(context)
+                        .setTitle("Polygon Information")
+                        .setMessage(it)
+                        .setPositiveButton("OK", null)
+                        .show()
+                }
             }
         }
 
-        private fun startWeatherReport(mMap: GoogleMap) {
+        private fun startWeatherReport(mMap: GoogleMap, context: Context) {
             val uiHandler = Handler(Looper.getMainLooper())
 
             weatherLoadJob = MainScope().launch {
                 while(true) {
                     CoroutineScope(Dispatchers.IO).launch {
-                        getData(mMap, uiHandler)
+                        getData(mMap, uiHandler, context)
                     }
                     delay(1000 * 60 * 10)
                 }
             }
-        }
-
-        fun stopWeatherReport() {
-            weatherLoadJob?.cancel()
-        }
-
-        fun startWeather(mMap: GoogleMap) {
-            startWeatherReport(mMap)
-        }
-
-        fun retPolys() : MutableList<Polygon>{
-            return storedPolygons
         }
 
 

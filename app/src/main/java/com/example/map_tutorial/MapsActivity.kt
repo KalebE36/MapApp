@@ -65,8 +65,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             if(!isChecked) {
                 WeatherReportsManager.stopWeatherReport()
             } else {
-                WeatherReportsManager.startWeather(mMap)
-                WeatherReportsManager.drawPolygonsOnMap(mMap)
+                WeatherReportsManager.startWeather(mMap, this)
+                WeatherReportsManager.drawPolygonsOnMap(mMap, this)
             }
             toggleWeatherLayer()
         }
@@ -84,7 +84,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private fun toggleWeatherLayer() {
         WeatherReportsManager.retPolys().forEach { poly ->
-            poly.isVisible = isTornadoLayerVisible
+            poly.isVisible = isWeatherLayerVisible
         }
     }
 
