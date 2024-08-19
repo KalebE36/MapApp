@@ -96,7 +96,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.uiSettings.isZoomGesturesEnabled = true
 
         WeatherReportsManager.initColorHashMap()
-        // Fetch and display air traffic data
+
         val startMarker = LatLng(41.49253740,-99.90181310)
         mMap.addMarker(MarkerOptions().position(startMarker).title("Marker in Nebraska"))
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startMarker, 4f))
