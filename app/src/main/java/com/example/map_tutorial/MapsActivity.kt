@@ -10,7 +10,6 @@ import com.google.android.gms.maps.SupportMapFragment
 import com.google.android.gms.maps.model.LatLng
 import com.google.android.gms.maps.model.MarkerOptions
 import com.example.map_tutorial.databinding.ActivityMapsBinding
-import com.google.android.gms.maps.model.Marker
 import com.google.android.material.bottomsheet.BottomSheetDialog
 import android.widget.CheckBox
 
@@ -19,7 +18,9 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
     private lateinit var mMap: GoogleMap
     private lateinit var binding: ActivityMapsBinding
-    private var isTornadoLayerVisible = true
+    private var isTornadoLayerVisible = false
+    private var isWeatherLayerVisible = false
+
 
 
 
@@ -45,15 +46,29 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         val bottomSheetView = layoutInflater.inflate(R.layout.filter, null)
 
         val checkBoxTornado = bottomSheetView.findViewById<CheckBox>(R.id.checkBoxTornado)
+        val checkBoxWeather = bottomSheetView.findViewById<CheckBox>(R.id.checkBoxWeather)
 
         checkBoxTornado.isChecked = isTornadoLayerVisible
         checkBoxTornado.setOnCheckedChangeListener { _, isChecked ->
             isTornadoLayerVisible = isChecked
             if(!isChecked) {
                 TornadoManager.stopMarkers()
-                System.out.println("Here")
+            } else {
+                TornadoManager.getMarkers(mMap)
             }
             toggleTornadoLayer()
+        }
+
+        checkBoxWeather.isChecked = isWeatherLayerVisible
+        checkBoxWeather.setOnCheckedChangeListener {_, isChecked ->
+            isWeatherLayerVisible = isChecked
+            if(!isChecked) {
+                WeatherReportsManager.stopWeatherReport()
+            } else {
+                WeatherReportsManager.startWeather(mMap)
+                WeatherReportsManager.drawPolygonsOnMap(mMap)
+            }
+            toggleWeatherLayer()
         }
 
 
@@ -67,6 +82,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             }
     }
 
+    private fun toggleWeatherLayer() {
+        WeatherReportsManager.retPolys().forEach { poly ->
+            poly.isVisible = isTornadoLayerVisible
+        }
+    }
+
     override fun onMapReady(googleMap: GoogleMap) {
         mMap = googleMap
         mMap.uiSettings.isZoomControlsEnabled = true
@@ -74,13 +95,14 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.uiSettings.isMyLocationButtonEnabled = true
         mMap.uiSettings.isZoomGesturesEnabled = true
 
-
+        WeatherReportsManager.initColorHashMap()
         // Fetch and display air traffic data
         val startMarker = LatLng(41.49253740,-99.90181310)
-        mMap.addMarker(MarkerOptions().position(startMarker).title("Marker in Nebrasks"))
+        mMap.addMarker(MarkerOptions().position(startMarker).title("Marker in Nebraska"))
         mMap.moveCamera(CameraUpdateFactory.newLatLngZoom(startMarker, 4f))
-        TornadoManager.getMarkers(mMap)
+        toggleWeatherLayer()
         toggleTornadoLayer()
+
     }
 
 }
