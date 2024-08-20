@@ -1,5 +1,6 @@
 package com.example.map_tutorial
 
+import android.content.Context
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -51,7 +52,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
             if(!isChecked) {
                 TornadoManager.stopMarkers()
             } else {
-                TornadoManager.getMarkers(mMap)
+                TornadoManager.getMarkers(mMap, this)
             }
             toggleTornadoLayer()
         }
@@ -100,5 +101,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         toggleTornadoLayer()
 
     }
+
+
 
 }
