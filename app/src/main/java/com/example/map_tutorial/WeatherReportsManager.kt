@@ -30,7 +30,7 @@ class WeatherReportsManager {
         private val storedFeatures = mutableListOf<Feature>()
 
         private var weatherLoadJob : Job? = null
-        private val storedPolygons = mutableListOf<Polygon>()
+        private var storedPolygons = mutableListOf<Polygon>()
 
         fun stopWeatherReport() {
             weatherLoadJob?.cancel()
@@ -42,10 +42,6 @@ class WeatherReportsManager {
 
         fun retPolys() : MutableList<Polygon>{
             return storedPolygons
-        }
-
-        private fun showToast(context: Context, message: String) {
-            Toast.makeText(context, message, Toast.LENGTH_LONG).show()
         }
 
         private fun getData(mMap: GoogleMap, uiHandler: Handler, context: Context) {
@@ -73,7 +69,6 @@ class WeatherReportsManager {
                             val type = object : TypeToken<WeatherData>() {}.type
                             val weatherData: WeatherData = gson.fromJson(responseBody, type)
                             storedFeatures.clear()
-                            storedPolygons.clear()
                             storedFeatures.addAll(weatherData.features)
                             uiHandler.post {
                                 drawPolygonsOnMap(mMap, context)
@@ -85,6 +80,7 @@ class WeatherReportsManager {
         }
 
         fun drawPolygonsOnMap(mMap: GoogleMap, context: Context) {
+
             for (feature in storedFeatures) {
                 val geometry = feature.geometry
                 val attributes: Attributes = feature.attributes
@@ -103,19 +99,15 @@ class WeatherReportsManager {
                 }
 
                 val polygon = mMap.addPolygon(polygonOptions)
-                val polygonInfo =
-                        "Event: ${attributes.Event}\n" + "UID: ${attributes.Uid}\n"
+                val polygonInfo = "Event: ${attributes.Event}\n" + "UID: ${attributes.Uid}\n"
                 polygon.tag = polygonInfo
+                storedPolygons.add(polygon)
 
             }
             mMap.setOnPolygonClickListener { clickedPolygon ->
                 val info = clickedPolygon.tag as? String
                 info?.let {
-                    AlertDialog.Builder(context)
-                        .setTitle("Polygon Information")
-                        .setMessage(it)
-                        .setPositiveButton("OK", null)
-                        .show()
+                    AlertDialog.Builder(context).setTitle("Polygon Information").setMessage(it).setPositiveButton("OK", null).show()
                 }
             }
         }

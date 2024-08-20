@@ -22,9 +22,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private var isWeatherLayerVisible = false
 
 
-
-
-
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
@@ -66,7 +63,6 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
                 WeatherReportsManager.stopWeatherReport()
             } else {
                 WeatherReportsManager.startWeather(mMap, this)
-                WeatherReportsManager.drawPolygonsOnMap(mMap, this)
             }
             toggleWeatherLayer()
         }
