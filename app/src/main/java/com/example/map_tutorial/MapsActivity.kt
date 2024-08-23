@@ -1,6 +1,7 @@
 package com.example.map_tutorial
 
 import android.content.Context
+import android.content.SharedPreferences
 import androidx.appcompat.app.AppCompatActivity
 import android.os.Bundle
 import android.widget.Button
@@ -21,6 +22,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
     private lateinit var binding: ActivityMapsBinding
     private var isTornadoLayerVisible = false
     private var isWeatherLayerVisible = false
+    private lateinit var sharedPreferences: SharedPreferences
 
 
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -28,6 +30,10 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
 
         binding = ActivityMapsBinding.inflate(layoutInflater)
         setContentView(binding.root)
+        sharedPreferences = getSharedPreferences("MyPreferences", Context.MODE_PRIVATE)
+
+        isTornadoLayerVisible = sharedPreferences.getBoolean("isTornadoLayerVisible", false)
+        isWeatherLayerVisible = sharedPreferences.getBoolean("isWeatherLayerVisible", false)
 
         val filterButton: Button = findViewById(R.id.filterButton)
         filterButton.setOnClickListener {
@@ -49,6 +55,8 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         checkBoxTornado.isChecked = isTornadoLayerVisible
         checkBoxTornado.setOnCheckedChangeListener { _, isChecked ->
             isTornadoLayerVisible = isChecked
+            savePreferences("isTornadoLayerVisible", isTornadoLayerVisible)
+
             if(!isChecked) {
                 TornadoManager.stopMarkers()
             } else {
@@ -60,6 +68,7 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         checkBoxWeather.isChecked = isWeatherLayerVisible
         checkBoxWeather.setOnCheckedChangeListener {_, isChecked ->
             isWeatherLayerVisible = isChecked
+            savePreferences("isWeatherLayerVisible", isWeatherLayerVisible)
             if(!isChecked) {
                 WeatherReportsManager.stopWeatherReport()
             } else {
@@ -93,6 +102,13 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         mMap.uiSettings.isZoomGesturesEnabled = true
 
         WeatherReportsManager.initColorHashMap()
+        if(isTornadoLayerVisible) {
+            TornadoManager.getMarkers(mMap, this)
+        }
+
+        if(isWeatherLayerVisible) {
+           WeatherReportsManager.startWeather(mMap, this)
+        }
 
         val startMarker = LatLng(41.49253740,-99.90181310)
         mMap.addMarker(MarkerOptions().position(startMarker).title("Marker in Nebraska"))
@@ -100,6 +116,12 @@ class MapsActivity : AppCompatActivity(), OnMapReadyCallback {
         toggleWeatherLayer()
         toggleTornadoLayer()
 
+    }
+
+    private fun savePreferences(key: String, value: Boolean) {
+        val editor = sharedPreferences.edit()
+        editor.putBoolean(key, value)
+        editor.apply()
     }
 
 
