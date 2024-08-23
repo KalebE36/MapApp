@@ -120,9 +120,6 @@ class WeatherReportsManager {
                     CoroutineScope(Dispatchers.IO).launch {
                         getData(mMap, uiHandler, context)
                     }
-//                    uiHandler.post {
-//                        drawPolygonsOnMap(mMap, context)
-//                    }
                     delay(1000 * 60 * 10)
                 }
             }
