@@ -15,8 +15,6 @@ import kotlinx.coroutines.*
 
 
 class TornadoManager {
-
-
     companion object {
         private val client = OkHttpClient()
         private var tornadoLoadJob: Job? = null
