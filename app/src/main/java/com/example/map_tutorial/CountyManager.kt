@@ -9,11 +9,11 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.InputStream
 
-class CountryManager {companion object {
+class CountyManager {companion object {
     private val storedPolygons = mutableListOf<Polygon>()
 
-    fun drawCountryBorders(mMap: GoogleMap, context: Context) {
-        val json = loadJSONFromRaw(context, R.raw.countries)
+    fun drawCountyBorders(mMap: GoogleMap, context: Context) {
+        val json = loadJSONFromRaw(context, R.raw.us_counties)
 
         if (json != null) {
             val gson = Gson()

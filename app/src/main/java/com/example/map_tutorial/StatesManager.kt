@@ -9,11 +9,11 @@ import com.google.gson.Gson
 import com.google.gson.reflect.TypeToken
 import java.io.InputStream
 
-class CountryManager {companion object {
+class StatesManager {companion object {
     private val storedPolygons = mutableListOf<Polygon>()
 
-    fun drawCountryBorders(mMap: GoogleMap, context: Context) {
-        val json = loadJSONFromRaw(context, R.raw.countries)
+    fun drawStateBorders(mMap: GoogleMap, context: Context) {
+        val json = loadJSONFromRaw(context, R.raw.us_states)
 
         if (json != null) {
             val gson = Gson()
@@ -30,6 +30,7 @@ class CountryManager {companion object {
                         val coordinates = geometry.coordinates as List<List<List<Double>>>
                         drawPolygon(coordinates, mMap, countryName)
                     }
+
                     "MultiPolygon" -> {
                         val coordinatesList = geometry.coordinates as List<List<List<List<Double>>>>
                         for (coordinates in coordinatesList) {
@@ -42,7 +43,11 @@ class CountryManager {companion object {
     }
 
 
-    private fun drawPolygon(coordinates: List<List<List<Double>>>, mMap: GoogleMap, countryName: String) {
+    private fun drawPolygon(
+        coordinates: List<List<List<Double>>>,
+        mMap: GoogleMap,
+        countryName: String
+    ) {
         val polygonOptions = PolygonOptions()
 
         for (coordinateList in coordinates) {
@@ -79,3 +84,4 @@ class CountryManager {companion object {
     }
 }
 }
+
