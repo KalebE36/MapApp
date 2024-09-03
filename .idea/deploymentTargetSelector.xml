@@ -6,7 +6,7 @@
         <option name="selectionMode" value="DROPDOWN" />
       </SelectionState>
       <SelectionState runConfigName="Map_Tutorial">
-        <option name="selectionMode" value="DIALOG" />
+        <option name="selectionMode" value="DROPDOWN" />
         <DropdownSelection timestamp="2024-08-15T23:41:16.394764Z">
           <Target type="DEFAULT_BOOT">
             <handle>

@@ -27,6 +27,27 @@
         android:text="Show Weather Reports"
         android:checked="false"/>
 
+    <CheckBox
+        android:id="@+id/checkBoxCountry"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show Country Lines"
+        android:checked="false"/>
+
+    <CheckBox
+        android:id="@+id/checkBoxCounty"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show County Lines"
+        android:checked="false"/>
+
+    <CheckBox
+        android:id="@+id/checkBoxState"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="Show State Lines"
+        android:checked="false"/>
+
     <!-- Add more checkboxes for other filters -->
 
 </LinearLayout>
